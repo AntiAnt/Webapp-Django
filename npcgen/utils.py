@@ -3,9 +3,10 @@ import random
 from requests_html import HTMLSession 
 
 import char_dict
+
 def find_hit_die(r):
     hit_p = r.html.find('p', first=False)
-    for i in range(len(hit_p)-1):
+    for i in range(len(hit_p)):
         if hit_p[i].text.startswith('Hit Dice'):
             hit_die = hit_p[i]
             hit_die = hit_die.text.split('\n')
@@ -23,24 +24,63 @@ def find_prof(r):
     prof = r.html.find('p', first=False)
     data = []
     prof_data = {}
-    for i in range(len(prof)-1):
+    for i in range(len(prof)):
         if prof[i].text.startswith('Armor'):
             data = prof[i].text.split('\n')
-            for p in range(len(data)-1):
-                key = data[p].split(':')[:1]
-                value = data[p].split(':')[1:]
-                prof_data[key[i]] = value[i]
-    return prof_data
+            for p in range(len(data)):
+                pair = data[p].split(':')
+                key = pair[0]
+                value = pair[1]
+                prof_data[key] = value
+            return prof_data
+
+def find_equip(r):
+    eq = r.html.find('ul', first=False)
+    data = []
+    eq_data = []
+    for i in range(len(eq)):
+        if eq[i].text.startswith('(a)'):
+            data = eq[i].text.split('\n')
+            for e in range(len(data)):
+                data[e] = data[e].replace('(a)', '')
+                data[e] = data[e].replace('(b)', '')
+                data[e] = data[e].replace('(c)', '')
+                data[e] = data[e].replace('  ',' ')
+                eq_data.append(data[e])
+    return eq_data
+
+def find_features(r):
+    """
+    return a dictionary values = feats keys = level and one nested
+    dictionary containting level: css id for feat description
+    """
+    feat_id = []
+    features = {}
+    level = r.html.find('tr', first=False)
+
+    for i in range(1,21):# just going to strip the level and feats for that level
+        ref = level[i].find('a')
+        for a in range(len(ref)):
+            feat_id.append(ref[a]) # adding to a list of css ids
+        lvl_data = level[i].text.split('\n')
+        features[lvl_data[0]] = lvl_data[2]
+    return features, feat_id
 
 def scrape_class():
     session = HTMLSession()
-    resp = session.get('http://www.dndbeyond.com/classes')
+    resp = session.get('https://www.dndbeyond.com/classes')
     title = resp.html.find('.listing-card__title', first=False)
+    dnd_class = {}
+    if len(title) == 0:
+        return 'ERROR could not get titles'
     for i in range(1):
         r = session.get(f'http://www.dndbeyond.com/classes/{title[i].text}')
         hit_die = find_hit_die(r)
         proficiencies = find_prof(r)
-        print(proficiencies)        
+        equip = find_equip(r)
+        feats = find_features(r)
+        
+    return dnd_class    # nested dictionary for each dnd class
         
 
 print(scrape_class())
@@ -70,7 +110,7 @@ def scrape_race():
                 traits.append(new_list[a])
         ability_improve.append(scores)
         char_traits.append(traits)
-    return race, ability_improve, char_trait
+    return race, ability_improve, char_traits
 
 def gen_race():
     races = [
