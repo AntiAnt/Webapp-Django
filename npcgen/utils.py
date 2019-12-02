@@ -2,7 +2,7 @@ import random
 
 from requests_html import HTMLSession 
 
-import char_dict
+#import char_dict
 
 def find_hit_die(r):
     hit_p = r.html.find('p', first=False)
@@ -67,23 +67,34 @@ def find_features(r):
     return features, feat_id
 
 def scrape_class():
+    """
+    ok so casters ar missing lvl 20 feats(bard, cleric, druid, paladin, ranger, sorcerer, & wizard)
+    weirdly not Warlocks. Also it seems the feats for rogue and monk classes are wrong.
+    """
     session = HTMLSession()
     resp = session.get('https://www.dndbeyond.com/classes')
     title = resp.html.find('.listing-card__title', first=False)
-    dnd_class = {}
+    classes = {}
     if len(title) == 0:
         return 'ERROR could not get titles'
-    for i in range(1):
+    for i in range(12):
         r = session.get(f'http://www.dndbeyond.com/classes/{title[i].text}')
-        hit_die = find_hit_die(r)
-        proficiencies = find_prof(r)
-        equip = find_equip(r)
-        feats = find_features(r)
+        hit_die = find_hit_die(r) #returns a dictionary
+        proficiencies = find_prof(r) #dictionary as well
+        equip = find_equip(r) #rerurns a list
+        feats = find_features(r) #returns  2 ditionaries 
+        dnd_class = {
+            'hit die' : hit_die, # dictionary
+            'proficiencies': proficiencies, #dictionary
+            'equipment': equip, #list
+            'features': feats[0]
+        }
         
-    return dnd_class    # nested dictionary for each dnd class
+        classes[title[i].text] = dnd_class
+    return classes    # nested dictionary for each dnd class
         
 
-print(scrape_class())
+#print(scrape_class())
 
 def scrape_race():
     session = HTMLSession()
@@ -110,8 +121,8 @@ def scrape_race():
                 traits.append(new_list[a])
         ability_improve.append(scores)
         char_traits.append(traits)
-    return race, ability_improve, char_traits
-
+    return race, ability_improve, char_traits 
+#print(scrape_race())
 def gen_race():
     races = [
         'Dragonborn', 'Dwarf', 'Elf',
