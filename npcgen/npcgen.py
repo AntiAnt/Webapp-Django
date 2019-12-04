@@ -1,5 +1,5 @@
 import random
-import utils
+from . import utils
 
 class Npc:
     def get_name(self):
@@ -55,8 +55,17 @@ class NpcGen(Npc):
         self.level = level
         self.race = utils.gen_race()
         self.npc_class = utils.gen_class() 
-        self.abilty_scores = utils.gen_scores(self.race, self.npc_class)# need to set the values to each Ability score based on class and race
+        self.ability_scores = utils.gen_scores(self.race, 'Barbarian')# need to set the values to each Ability score based on class and race
     
+    def get_hit_dice(self):
+        hit_die = ''
+        class_ = Class_info.objects.all()
+        for c in class_:
+            if class_.class_title[i] == self.race:
+                hit_die = class_.hit_die
+        return hit_die
+
+
     def get_abilty_mod(self):
         return 
 
@@ -69,9 +78,6 @@ x = NpcGen('mike', 1)
 print(x.name)
 print(x.race)
 print(x.npc_class)
-print(x.abilty_scores)
+print(x.ability_scores)
 print(x.get_prof_mod())
-
-x.level = 11
-print(x.level)
-print(x.get_prof_mod())
+print(x.get_hit_dice)

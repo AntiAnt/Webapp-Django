@@ -1,8 +1,10 @@
 import random
+from . import char_dict 
 
+from npcgen.models import Class_info, Race_info
 from requests_html import HTMLSession 
 
-#import char_dict
+
 
 def find_hit_die(r):
     hit_p = r.html.find('p', first=False)
@@ -13,6 +15,7 @@ def find_hit_die(r):
             hit_points_first = hit_die[1].split(':')[1].strip() 
             hit_points_after = hit_die[2].split(':')[1].strip()
             hit_die = hit_die[0][10:15].replace(' ','')
+            hit_die = hit_die.replace('p','')
             hits = {
                 'hit die': hit_die,
                 'hit points 1st level': hit_points_first,
@@ -142,7 +145,7 @@ def gen_class():
 def gen_scores(race, npc_class):
     scores = []
     ability_scores ={}
-    abilities = char_dict.classes[race]['scores'] 
+    abilities = char_dict.classes[npc_class]['scores'] 
     for i in range(1,7):
         die = []
         for d in range(1,5):
@@ -156,6 +159,7 @@ def gen_scores(race, npc_class):
         ability_scores.update({abilities[a]: scores[a]})
 
     return  ability_scores  
+
 
 def prof_mod(level):
     if level < 5 and level > 0:
