@@ -166,6 +166,8 @@ def gen_scores(race, npc_class):
     # using the first 3 letters of the abitily search through the list and 
     # add or subtract the correct number. example data '+2 Strength' 
     #add 2 to the Str value
+    query = Race_info.objects.get(race_title=race)
+    print(query.ability_score_modifier)
     
     return  ability_scores  
 

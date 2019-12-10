@@ -28,9 +28,13 @@ class Command(BaseCommand):
             r = Race_info()
             r.race_title = key
             r.race_traits = value['char traits']
-            r.save()
-            a.mod_1 = value['ability improve'][0]
-            a.mod_2 = value['ability improve'][1]
-            a.save()
             
+            if len(value['ability improve']) > 1:
+                a.mod_1 = value['ability improve'][0]
+                a.mod_2 = value['ability improve'][1]
+            else:
+                a.mod_1 = value['ability improve'][0]
+            a.save()
+            r.ability_score_modifier = a
+            r.save()
         return 'hello'
