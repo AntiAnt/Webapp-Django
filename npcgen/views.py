@@ -15,4 +15,4 @@ def index(requests):
 
     all_names = ' '.join(names)
     all_hit_die = ' '.join(hit_die)
-    return HttpResponse(f"hi this will be the random npc generator\n\n {all_names,all_hit_die, x.race, x.name, x.ability_scores}")
+    return HttpResponse(f"hi this will be the random npc generator\n\n {all_names,all_hit_die, x.race,x.npc_class, x.name, x.get_hit_dice()}")

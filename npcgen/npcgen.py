@@ -1,4 +1,6 @@
 import random
+
+from npcgen.models import Class_info, Race_info
 from . import utils
 
 class Npc:
@@ -57,13 +59,14 @@ class NpcGen(Npc):
         self.npc_class = utils.gen_class() 
         self.ability_scores = utils.gen_scores(self.race, 'Barbarian')# need to set the values to each Ability score based on class and race
     
-    def get_hit_dice(self):
-        hit_die = ''
-        class_ = Class_info.objects.all()
-        for c in class_:
-            if class_.class_title[i] == self.race:
-                hit_die = class_.hit_die
-        return hit_die
+    #def get_hit_dice(self):
+    #    try:
+    #        q = Class_info.objects.get(class_title=self.npc_class)
+    #        d = q.hit_die
+    #    except DoesNotExist:
+    #        return 'Error! data not found in database'
+    #    else:
+    #        return d
 
 
     def get_abilty_mod(self):
@@ -80,4 +83,6 @@ print(x.race)
 print(x.npc_class)
 print(x.ability_scores)
 print(x.get_prof_mod())
-print(x.get_hit_dice)
+print(x.get_hit_dice())
+rc = utils.scrape_race()
+print(rc['Dwarf']['ability improve'])

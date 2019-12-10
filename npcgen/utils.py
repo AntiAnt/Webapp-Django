@@ -1,3 +1,5 @@
+
+import requests
 import random
 from . import char_dict 
 
@@ -107,25 +109,27 @@ def scrape_race():
     ability_improve = []
     char_traits = []
     race = []
-    
+    races = {}
     
     for i in range(9):
         scores = []
         traits = []
-        race.append(title[i].text)
         new_list = stat[i].text.replace(' ','')
         new_list = new_list.split('\n', 1)
         new_list = new_list[1:]
         new_list = new_list[0].split(',')
-        for a in range(len(new_list) - 1):
+        for a in range(len(new_list)):
             if new_list[a][0] == '+' or new_list[a][0] =='-':
                 scores.append(new_list[a])
             else:
                 traits.append(new_list[a])
-        ability_improve.append(scores)
-        char_traits.append(traits)
-    return race, ability_improve, char_traits 
-#print(scrape_race())
+        races[title[i].text] = {
+            'ability improve': scores,
+            'char traits': traits
+        }
+   
+    return races
+
 def gen_race():
     races = [
         'Dragonborn', 'Dwarf', 'Elf',
@@ -155,9 +159,14 @@ def gen_scores(race, npc_class):
         i = sum(die[:-1])
         scores.append(i)
     scores.sort(reverse=True)  
-    for a in range(len(scores)-1):
+    for a in range(len(scores)):
         ability_scores.update({abilities[a]: scores[a]})
-
+    
+    #find ability score improvements and add them to the proper score
+    # using the first 3 letters of the abitily search through the list and 
+    # add or subtract the correct number. example data '+2 Strength' 
+    #add 2 to the Str value
+    
     return  ability_scores  
 
 
